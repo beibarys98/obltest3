@@ -1,0 +1,33 @@
+version: '3.2'
+
+services:
+
+  frontend:
+    build: frontend
+    ports:
+      - 20080:80
+    volumes:
+      # Re-use local composer cache via host-volume
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=verysecret
+      - MYSQL_DATABASE=yii2advanced
+      - MYSQL_USER=yii2advanced
+      - MYSQL_PASSWORD=secret
+      - MYSQL_CHARSET=utf8mb4  # Set default character set
+      - MYSQL_COLLATION=utf8mb4_unicode_ci  # Set default collation
+    ports:
+      - 3306:3306  # Expose MySQL port
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
