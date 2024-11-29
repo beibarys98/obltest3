@@ -14,6 +14,7 @@ use Yii;
  * @property int $subject_id
  * @property int|null $test_id
  * @property string $language
+ * @property string|null $payment_time
  * @property string|null $start_time
  * @property string|null $end_time
  * @property int|null $result
@@ -44,7 +45,7 @@ class Teacher extends \yii\db\ActiveRecord
             ['language', 'required', 'message' => Yii::t('app', 'Тест тапсыру тілі толтырылмаған!')],
             ['user_id', 'required'],
             [['user_id', 'subject_id', 'test_id', 'result'], 'integer'],
-            [['start_time', 'end_time'], 'safe'],
+            [['payment_time', 'start_time', 'end_time'], 'safe'],
             [['name', 'school'], 'string', 'max' => 255],
             ['name', 'match', 'pattern' => '/^[А-ЯЁӘІҢҒҮҰҚӨҺа-яёәіңғүұқөһ\s-]+$/u', 'message' => Yii::t('app', 'Аты-жөніңіз кириллица болуы тиіс!')],
             ['name', 'match', 'pattern' => '/^[^\s]/', 'message' => Yii::t('app', 'Аты-жөніңіз бос орыннан бастала алмайды!')],

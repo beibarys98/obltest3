@@ -40,35 +40,35 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'first',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->first ? Html::a($model->first, [$model->first], ['target' => '_blank', 'data-pjax' => '0']) : null;
+                    return $model->first ? Html::a($model->first, [$model->first], ['target' => '_blank', 'data-pjax' => '0']) : '---';
                 },
             ],
             [
                 'attribute' => 'second',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->second ? Html::a($model->second, [$model->second], ['target' => '_blank', 'data-pjax' => '0']) : null;
+                    return $model->second ? Html::a($model->second, [$model->second], ['target' => '_blank', 'data-pjax' => '0']) : '---';
                 },
             ],
             [
                 'attribute' => 'third',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->third ? Html::a($model->third, [$model->third], ['target' => '_blank', 'data-pjax' => '0']) : null;
+                    return $model->third ? Html::a($model->third, [$model->third], ['target' => '_blank', 'data-pjax' => '0']) : '---';
                 },
             ],
             [
                 'attribute' => 'fourth',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->fourth ? Html::a($model->fourth, [$model->fourth], ['target' => '_blank', 'data-pjax' => '0']) : null;
+                    return $model->fourth ? Html::a($model->fourth, [$model->fourth], ['target' => '_blank', 'data-pjax' => '0']) : '---';
                 },
             ],
             [
                 'attribute' => 'fifth',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->fifth ? Html::a($model->fifth, [$model->fifth], ['target' => '_blank', 'data-pjax' => '0']) : null;
+                    return $model->fifth ? Html::a($model->fifth, [$model->fifth], ['target' => '_blank', 'data-pjax' => '0']) : '---';
                 },
             ],
             [
