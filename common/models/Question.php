@@ -72,6 +72,11 @@ class Question extends \yii\db\ActiveRecord
         return $this->hasOne(Test::class, ['id' => 'test_id']);
     }
 
+    public function getTeacherAnswer()
+    {
+        return $this->hasOne(TeacherAnswer::class, ['question_id' => 'id']);
+    }
+
     /**
      * {@inheritdoc}
      * @return \common\models\query\QuestionQuery the active query used by this AR class.

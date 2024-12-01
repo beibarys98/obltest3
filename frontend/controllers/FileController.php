@@ -4,6 +4,8 @@ namespace frontend\controllers;
 
 use common\models\File;
 use common\models\search\FileSearch;
+use common\models\User;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -31,13 +33,12 @@ class FileController extends Controller
         );
     }
 
-    /**
-     * Lists all File models.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $searchModel = new FileSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -47,26 +48,23 @@ class FileController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single File model.
-     * @param int $id ID
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionView($id)
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
     }
 
-    /**
-     * Creates a new File model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
     public function actionCreate()
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $model = new File();
 
         if ($this->request->isPost) {
@@ -82,15 +80,12 @@ class FileController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing File model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id ID
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionUpdate($id)
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -102,27 +97,17 @@ class FileController extends Controller
         ]);
     }
 
-    /**
-     * Deletes an existing File model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionDelete($id)
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the File model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id ID
-     * @return File the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($id)
     {
         if (($model = File::findOne(['id' => $id])) !== null) {

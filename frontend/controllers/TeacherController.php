@@ -2,8 +2,10 @@
 
 namespace frontend\controllers;
 
+use common\models\File;
 use common\models\Teacher;
 use common\models\search\TeacherSearch;
+use common\models\TeacherAnswer;
 use common\models\User;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -30,6 +32,10 @@ class TeacherController extends Controller
 
     public function actionIndex()
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $searchModel = new TeacherSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -41,6 +47,10 @@ class TeacherController extends Controller
 
     public function actionView($id)
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $dataProvider = new ActiveDataProvider([
             'query' => Teacher::find()->andWhere(['id' => $id]),
         ]);
@@ -53,6 +63,10 @@ class TeacherController extends Controller
 
     public function actionCreate()
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $model = new Teacher();
 
         if ($this->request->isPost) {
@@ -70,6 +84,10 @@ class TeacherController extends Controller
 
     public function actionUpdate($id)
     {
+        if(Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $model = $this->findModel($id);
         $user = User::findOne($model->user_id);
 
@@ -94,7 +112,27 @@ class TeacherController extends Controller
 
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
+        $teacher = Teacher::findOne($id);
+        $files = File::findAll(['teacher_id' => $id]);
+        foreach ($files as $file) {
+            if ($file->path) {
+                unlink($file->path);
+            }
+        }
+
+        File::deleteAll(['teacher_id' => $id]);
+        TeacherAnswer::deleteAll(['teacher_id' => $teacher->id]);
+
+        $teacher->delete();
+
+        $user = User::findOne($teacher->user_id);
+        if ($user !== null) {
+            $user->delete();
+        }
 
         return $this->redirect(['index']);
     }

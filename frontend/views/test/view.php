@@ -1,14 +1,22 @@
 <?php
 
 use common\models\Answer;
+use common\models\File;
+use common\models\Teacher;
+use yii\bootstrap5\LinkPager;
+use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\Pjax;
 
 /** @var yii\web\View $this */
 /** @var common\models\Test $model */
 /** @var $dataProvider */
 /** @var $questions */
+/** @var $searchModel */
+/** @var $dataProvider2 */
+/** @var $switch */
 
 $this->title = $model->subject->title . '_' . $model->language . '_' . $model->version;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Тесттер'), 'url' => ['index']];
@@ -49,6 +57,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'duration',
                 'enableSorting' => false,
             ],
+            [
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::tag('div',
+                        Html::a(Yii::t('app', 'Өзгерту'), ['test/update', 'id' => $model->id],
+                            ['class' => 'btn btn-primary']),
+                        ['style' => 'text-align: right;']
+                    );
+                }
+            ]
         ],
     ]); ?>
 
@@ -60,7 +78,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo Html::a(Yii::t('app', 'Дайын') ,
                         ['/test/ready', 'id' => $model->id],
                         ['class' => 'btn btn-success w-100']);
-                }else if($model->status == 'ready'){
+                }
+                if($model->status == 'ready'){
                     echo Html::a(Yii::t('app', 'Жариялау'),
                         ['test/publish', 'id' => $model->id],
                         [
@@ -69,7 +88,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'confirm' => Yii::t('app', 'Сенімдісіз бе?'),
                             ]
                         ]);
-                }else if($model->status == 'public'){
+                }
+                if($model->status == 'public'){
                     echo Html::a(Yii::t('app', 'Аяқтау') ,
                         ['test/end', 'id' => $model->id],
                         [
@@ -78,7 +98,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'confirm' => Yii::t('app', 'Сенімдісіз бе?'),
                             ]
                         ]);
-                }else if($model->status == 'finished'){
+                }
+                if($model->status == 'finished'){
                     echo Html::a(Yii::t('app', 'Қайта жариялау') ,
                         ['test/publish', 'id' => $model->id],
                         [
@@ -96,7 +117,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'confirm' => Yii::t('app', 'Сенімдісіз бе?'),
                             ]
                         ]);
-                }else if($model->status == 'certificated'){
+                }
+                if($model->status == 'certificated'){
                     echo Html::a(Yii::t('app', 'Қайта марапаттау') ,
                         ['test/present', 'id' => $model->id],
                         [
@@ -105,50 +127,47 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'confirm' => Yii::t('app', 'Сенімдісіз бе?'),
                             ]
                         ]);
-                    echo '<br>';
                 }
                 ?>
             </div>
             <div class="col-4 mt-auto">
                 <?php
-                if($model->status == 'public'){
-                    echo Html::a(Yii::t('app', 'Қатысушылар') ,
-                        ['/test/participants', 'id' => $model->id],
-                        ['class' => 'btn btn-primary w-100']);
-                }else if($model->status == 'finished'){
-                    echo Html::a(Yii::t('app', 'Нәтиже') ,
-                        ['test/result', 'id' => $model->id],
-                        [
-                            'class' => 'btn btn-info w-100 mb-1',
-                        ]);
-                    echo '<br>';
-                    echo Html::a(Yii::t('app', 'Қатысушылар') ,
-                        ['/test/participants', 'id' => $model->id],
-                        ['class' => 'btn btn-primary w-100']);
-                }else if($model->status == 'certificated'){
+                if($model->status == 'certificated'){
                     echo Html::a(Yii::t('app', 'Сертификаттар') ,
-                        ['test/download-zip', 'id' => $model->id],
+                        ['test/certificates', 'id' => $model->id],
                         [
                             'class' => 'btn btn-info w-100 mb-1',
                         ]);
                     echo '<br>';
-                    echo Html::a(Yii::t('app', 'Нәтиже') ,
+                    echo Html::a(Yii::t('app', 'Журнал') ,
+                        ['test/journal', 'id' => $model->id],
+                        [
+                            'class' => 'btn btn-info w-100 mb-1',
+                        ]);
+                }
+                if (in_array($model->status, ['finished', 'certificated'])) {
+                    echo Html::a(Yii::t('app', 'Нәтиже'),
                         ['test/result', 'id' => $model->id],
                         [
                             'class' => 'btn btn-info w-100 mb-1',
                         ]);
                     echo '<br>';
-                    echo Html::a(Yii::t('app', 'Қатысушылар') ,
-                        ['/test/participants', 'id' => $model->id],
-                        ['class' => 'btn btn-primary w-100']);
                 }
-                ?>
+                if($switch == 'test'){
+                    echo Html::a(Yii::t('app', 'Қатысушылар'),
+                        ['/test/view', 'id' => $model->id, 'switch' => 'participant'],
+                        ['class' => 'btn btn-primary w-100']);
+                }elseif ($switch == 'participant'){
+                    echo Html::a(Yii::t('app', 'Тест'),
+                        ['/test/view', 'id' => $model->id, 'switch' => 'test'],
+                        ['class' => 'btn btn-primary w-100']);
+                } ?>
             </div>
             <div class="col-4 mt-auto">
                 <?= Html::a(Yii::t('app', 'Өшіру'),
                     ['test/delete', 'id' => $model->id],
                     [
-                        'class' => 'btn btn-danger w-100',
+                        'class' => 'btn btn-danger w-100 disabled',
                         'data' => [
                             'confirm' => Yii::t('app', 'Сенімдісіз бе?'),
                             'method' => 'post',
@@ -158,6 +177,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
+    <?php if($switch == 'test'): ?>
     <div style="font-size: 24px;">
         <?php $number = 1; ?>
         <?php foreach ($questions as $q): ?>
@@ -166,10 +186,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ]) ?>
             <?= $number++ . '. '; ?>
             <?php if ($q->formula_path): ?>
-                <!-- Display the formula image if it exists -->
                 <?= Html::img(Url::to('@web/' . $q->formula_path)) ?>
             <?php else: ?>
-                <!-- Display the question text if no formula exists -->
                 <?= $q->question; ?>
             <?php endif; ?>
             <br>
@@ -205,5 +223,83 @@ $this->params['breadcrumbs'][] = $this->title;
             <br>
         <?php endforeach; ?>
     </div>
+
+    <?php elseif ($switch == 'participant'): ?>
+
+        <div>
+            <?php Pjax::begin(); ?>
+            <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider2,
+                'filterModel' => $searchModel,
+                'tableOptions' => ['class' => 'table table-hover'],
+                'pager' => [
+                    'class' => LinkPager::class,
+                ],
+                'columns' => [
+                    [
+                        'attribute' => 'id',
+                        'headerOptions' => ['style' => 'width: 5%;'],
+                    ],
+                    [
+                        'attribute' => 'username',
+                        'value' => 'user.username'
+                    ],
+                    'name',
+                    [
+                        'label' => 'Times',
+                        'attribute' => 'start_time',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            $paymentTime = $model->payment_time ?? '---';
+                            $startTime = $model->start_time ?? '---';
+                            $endTime = $model->end_time ?? '---';
+
+                            return $paymentTime . '<br>' . $startTime . '<br>' . $endTime;
+                        }
+                    ],
+                    [
+                        'attribute' => 'result',
+                        'headerOptions' => ['style' => 'width: 5%;'],
+                        'value' => function ($model) {
+                            return empty($model->result) ? '---' : $model->result;
+                        },
+                    ],
+                    [
+                        'label' => 'Files',
+                        'format' => 'raw',
+                        'value' => function ($model) {
+                            $receipt = File::find()
+                                ->where(['teacher_id' => $model->id, 'type' => 'receipt'])
+                                ->orderBy(['id' => SORT_DESC])
+                                ->one();
+
+                            $certificate = File::find()
+                                ->where(['teacher_id' => $model->id, 'type' => 'certificate'])
+                                ->orderBy(['id' => SORT_DESC])
+                                ->one();
+
+
+                            $receiptLink = $receipt->path ? Html::a('Квитанция', [$receipt->path], ['target' => '_blank', 'data-pjax' => '0']) : '---';
+                            $certificateLink = $certificate ? Html::a('Марапат', [$certificate->path], ['target' => '_blank', 'data-pjax' => '0']) : '---';
+
+                            return $receiptLink . '<br>' . $certificateLink;
+                        }
+                    ],
+                    [
+                        'class' => ActionColumn::className(),
+                        'template' => '{update}<span style="margin: 10px;"></span>{delete}',
+                        'urlCreator' => function ($action, Teacher $model, $key, $index, $column) {
+                            return Url::toRoute(['teacher/' . $action, 'id' => $model->id]);
+                        }
+                    ],
+                ],
+            ]); ?>
+
+            <?php Pjax::end(); ?>
+        </div>
+
+    <?php endif;?>
 
 </div>

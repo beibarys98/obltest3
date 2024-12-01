@@ -1,13 +1,8 @@
 <?php
 
-use common\models\Test;
 use yii\bootstrap5\ActiveForm;
-use yii\bootstrap5\LinkPager;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\grid\ActionColumn;
-use yii\grid\GridView;
-use yii\widgets\Pjax;
+
 /** @var yii\web\View $this */
 /** @var $place */
 /** @var $purpose */
@@ -62,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $form->field($purpose, 'cost')->textInput()->label('Сумма') ?>
 
         <div class="form-group">
-            <?= \yii\helpers\Html::submitButton('Сақтау',
+            <?= Html::submitButton('Сақтау',
                 ['class' => 'btn btn-secondary w-100', 'style' => 'text-align: center;']) ?>
         </div>
 

@@ -55,7 +55,7 @@ class SignupForm extends Model
         $user->email = $this->email;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        $user->generateEmailVerificationToken();
+        $user->status = User::STATUS_ACTIVE;
         $user->save();
 
         $teacher->user_id = $user->id;
@@ -66,7 +66,7 @@ class SignupForm extends Model
         $receipt->type = 'receipt';
         $receipt->save();
 
-        return $this->sendEmail($user, $teacher);
+        return true;
     }
 
     /**

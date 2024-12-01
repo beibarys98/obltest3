@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'duration',
             [
                 'class' => ActionColumn::className(),
-                'template' => '{view}<span style="margin: 10px;"></span>{update}<span style="margin: 10px;"></span>{delete}',
+                'template' => '{view}',
                 'urlCreator' => function ($action, Test $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }

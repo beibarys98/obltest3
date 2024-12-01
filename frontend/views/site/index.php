@@ -8,7 +8,11 @@
 /** @var $dataProvider4 */
 /** @var $purpose */
 /** @var $receipt */
+/** @var $disabled */
 
+use common\models\File;
+use common\models\Question;
+use common\models\Teacher;
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\LinkPager;
 use yii\grid\GridView;
@@ -29,7 +33,8 @@ $this->title = $teacher->name;
         'columns' => [
             [
                 'label' => Yii::t('app', 'ЖСН'),
-                'attribute' => 'user_id',
+                'attribute' => 'username',
+                'value' => 'user.username',
                 'enableSorting' => false,
             ],
             [
@@ -66,7 +71,7 @@ $this->title = $teacher->name;
                 'format' => 'raw',
                 'value' => function ($model) {
                     return Html::tag('div',
-                        Html::a(Yii::t('app', 'Өзгерту'), [''], ['class' => 'btn btn-primary']),
+                        Html::a(Yii::t('app', 'Өзгерту'), ['site/teacher-update', 'id' => $model->id], ['class' => 'btn btn-primary']),
                         ['style' => 'text-align: right;']
                     );
                 }
@@ -89,9 +94,21 @@ $this->title = $teacher->name;
         'columns' => [
             [
                 'attribute' => 'path',
+                'format' => 'raw',
                 'value' => function ($model) {
-                    return empty($model->path) ? Yii::t('app', 'Квитанция жүктеңіз!') : $model->path;
+                    return empty($model->path)
+                        ? Yii::t('app', 'Түбіртек жүктеңіз!')
+                        : Html::a(Yii::t('app', 'Түбіртек'), [$model->path], ['target' => '_blank']);
                 },
+            ],
+            [
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $model->teacher->payment_time
+                        ? date('H:i:s d/m/Y', strtotime($model->teacher->payment_time))
+                        : '';
+                },
+
             ],
             [
                 'format' => 'raw',
@@ -120,10 +137,12 @@ $this->title = $teacher->name;
             'class' => LinkPager::class,
         ],
         'summary' => false,
+        'emptyText' => Yii::t('app', 'Тест жарияланбады!'),
         'columns' => [
             [
                 'label' => Yii::t('app', 'Пән'),
-                'attribute' => 'subject_id',
+                'attribute' => 'subject',
+                'value' => 'subject.title',
                 'enableSorting' => false,
             ],
             [
@@ -144,8 +163,21 @@ $this->title = $teacher->name;
             [
                 'format' => 'raw',
                 'value' => function ($model) {
+                    $teacher = Teacher::findOne(['test_id' => $model->id]);
+                    $isActive = ($teacher && ($teacher->payment_time && !$teacher->end_time)) ? 'active' : 'disabled';
+
+                    $firstQuestion = Question::find()->andWhere(['test_id' => $model->id])->one();
+                    $firstQuestionId = $firstQuestion ? $firstQuestion->id : null;
+
                     return Html::tag('div',
-                        Html::a(Yii::t('app', 'Бастау'), [''], ['class' => 'btn btn-success']),
+                        Html::a(Yii::t('app', 'Бастау'),
+                            ['site/test', 'id' => $firstQuestionId],
+                            [
+                                'class' => 'btn btn-success ' . $isActive,
+                                'data' => [
+                                    'confirm' => Yii::t('app', 'Сенімдісіз бе?'),
+                                ],
+                            ]),
                         ['style' => 'text-align: right;']
                     );
                 },
@@ -165,18 +197,22 @@ $this->title = $teacher->name;
         ],
         'showHeader' => false,
         'summary' => false,
+        'emptyText' => Yii::t('app', 'Марапатты күтіңіз!'),
         'columns' => [
             [
                 'attribute' => 'path',
+                'format' => 'raw',
                 'value' => function ($model) {
-                    return empty($model->path) ? '---' : $model->path;
+                    $title = $model->teacher->name . '.jpg';
+                    return empty($model->path)
+                        ?: Html::a($title, [$model->path], ['target' => '_blank']);
                 }
             ],
             [
                 'format' => 'raw',
                 'value' => function ($model) {
                     return Html::tag('div',
-                        Html::a(Yii::t('app', 'Жүктеп алу'), [''], ['class' => 'btn btn-success']),
+                        Html::a(Yii::t('app', 'Жүктеп алу'), ['download', 'path' => $model->path], ['class' => 'btn btn-success']),
                         ['style' => 'text-align: right;']
                     );
                 }
@@ -207,7 +243,7 @@ $this->title = $teacher->name;
                         <label class="mt-1" for="payment-purpose"><?= Yii::t('app', 'Назначение платежа') ?></label>
                         <input id="payment-purpose" type="text" value="<?= $purpose->purpose ?>" class="form-control" disabled>
                         <label class="mt-1" for="payment-amount"><?= Yii::t('app', 'Сумма') ?></label>
-                        <input id="payment-amount" type="text" value="<?= $purpose->cost ?>" class="form-control" disabled>
+                        <input id="payment-amount" type="text" value="<?= $purpose->cost ?> ₸" class="form-control" disabled>
                     </div>
 
                     <div class="mt-1">

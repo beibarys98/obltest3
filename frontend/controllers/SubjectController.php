@@ -4,6 +4,8 @@ namespace frontend\controllers;
 
 use common\models\Subject;
 use common\models\search\SubjectSearch;
+use common\models\User;
+use Yii;
 use yii\helpers\FileHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -29,6 +31,10 @@ class SubjectController extends Controller
 
     public function actionIndex()
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $searchModel = new SubjectSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -40,6 +46,10 @@ class SubjectController extends Controller
 
     public function actionView($id)
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -66,6 +76,10 @@ class SubjectController extends Controller
 
     public function actionCreate()
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $model = new Subject();
 
         if ($this->request->isPost) {
@@ -86,6 +100,10 @@ class SubjectController extends Controller
 
     public function actionUpdate($id)
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post())) {
@@ -102,6 +120,10 @@ class SubjectController extends Controller
 
     public function actionDelete($id)
     {
+        if(!User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin']) && Yii::$app->user->isGuest){
+            return $this->redirect('/site/login');
+        }
+
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

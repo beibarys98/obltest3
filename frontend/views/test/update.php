@@ -1,23 +1,57 @@
 <?php
 
+use common\models\Subject;
+use kartik\select2\Select2;
+use yii\bootstrap5\ActiveForm;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var common\models\Test $model */
 
-$this->title = Yii::t('app', 'Update Test: {name}', [
-    'name' => $model->id,
-]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Tests'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$testTitle = $model->subject->title . '_' . $model->language . '_' . $model->version;
+$this->title = Yii::t('app', 'Өзгерту');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Тесттер'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $testTitle, 'url' => ['test/view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="test-update">
+<div class="test-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
-        'model' => $model,
+    <?php $form = ActiveForm::begin([
+        'options' => ['enctype' => 'multipart/form-data'],
+    ]); ?>
+
+    <?= $form->field($model, 'subject_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map(Subject::find()->all(), 'id', 'title'),
+        'options' => ['placeholder' => ''],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
     ]) ?>
+
+    <?= $form->field($model, 'language')->widget(Select2::classname(), [
+        'data' => [
+            'kz' => Yii::t('app', 'қазақша'),
+            'ru' => Yii::t('app', 'орысша'),
+        ],
+        'options' => ['placeholder' => ''],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
+    ]); ?>
+
+    <?= $form->field($model, 'version')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'status')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'duration')->input('time');?>
+
+    <div class="form-group">
+        <?= Html::submitButton(Yii::t('app', 'Сақтау'), ['class' => 'btn btn-success']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
 
 </div>

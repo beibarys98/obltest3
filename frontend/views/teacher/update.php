@@ -2,6 +2,7 @@
 
 use common\models\Subject;
 use common\models\Test;
+use common\models\User;
 use kartik\select2\Select2;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\ArrayHelper;
@@ -22,9 +23,9 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Өзгерту');
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($user, 'username')->textInput() ?>
+    <?= $form->field($user, 'username')->textInput()->label(Yii::t('app', 'ЖСН')) ?>
 
-    <?= $form->field($user, 'email')->textInput() ?>
+    <?= $form->field($user, 'email')->textInput()->label(Yii::t('app', 'Пошта')) ?>
 
     <?= $form->field($user, 'newPassword')->textInput() ?>
 
@@ -51,6 +52,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Өзгерту');
         ); ?>
 
     <?php
+    if(User::findOne(['id' => Yii::$app->user->id, 'username' => 'admin'])):
     $tests = ArrayHelper::map(
         Test::find()->all(),
         'id',
@@ -75,6 +77,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Өзгерту');
                     'maximumInputLength' => 20,
                 ],
             ]);
+    endif;
     ?>
 
     <?php
@@ -93,6 +96,8 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Өзгерту');
         ],
     ]);
     ?>
+
+    <?= $form->field($model, 'payment_time')->textInput() ?>
 
     <?= $form->field($model, 'start_time')->textInput() ?>
 
